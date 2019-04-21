@@ -73,7 +73,7 @@ def ModelLearning_RF(X, y):
         The learning and testing scores for each model are then plotted. """
 
     # Create 10 cross-validation sets for training and testing
-    cv = ShuffleSplit(n_splits = 10, test_size = 0.2, random_state = 0)
+    cv = ShuffleSplit(n_splits = 4, test_size = 0.2, random_state = 0)
 
     # Generate the training set sizes increasing by 50
     train_sizes = np.rint(np.linspace(1, X.shape[0]*0.8 - 1, 9)).astype(int)
@@ -162,7 +162,7 @@ def ModelComplexity_RF(X, y):
         The learning and testing errors rates are then plotted. """
 
     # Create 10 cross-validation sets for training and testing
-    cv = ShuffleSplit(n_splits = 10, test_size = 0.2, random_state = 0)
+    cv = ShuffleSplit(n_splits = 4, test_size = 0.2, random_state = 0)
 
     # Vary the max_depth parameter from 10 to 30
     max_depth = np.arange(10,30)
