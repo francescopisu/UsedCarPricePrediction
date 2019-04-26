@@ -177,6 +177,9 @@ An advantage of Label Encoding is obviously the fact that the dimensionality rem
 
 Last but not least, the dataset has been split into training set (66% of total) and hold-out test set (33% of total) for final validation.
 
+<!-- THIRD CHAPTER -->
+
+<!-- FOURTH CHAPTER -->
 # 4 Comparing regression models
 In this section we compare the different regression models used in the analysis.
 
@@ -194,22 +197,50 @@ We then fit a linear regressor with these parameters. In the table below we can 
 
 
 ## 4.3 Decision Tree Regression
-Using *RF_SparkizedGridSearchCV(X, y)* we determine the best value for **max_depth** parameter. This function fits a Decision Tree Regressor for increasing values of max_depth parameter (1, 5, 10, 15, 16, 17).
+Using *ModelComplexity_DT(X, y)* we determine the best value for **max_depth** parameter. This function fits a Decision Tree Regressor for increasing values of max_depth parameter (values between 10 and 30) and outputs the best value.
 
+![Decision Tree Regressor complexity curve](https://raw.githubusercontent.com/francescopisu/Used-car-price-prediction/master/images/DT_complexity_curve.png)
 
+The chart above is called complexity curve and it shows the performance of the model (training and test score) for increasing values of max_depth. The best value is around 17 because the two scores are close.  
+
+Then, using the method *DT_SparkizedGridSearchCV(X, y)* we determine precisely which value for max_depth is best.
+```
+DecisionTreeRegressor(criterion='mse', max_depth=17, max_features=None,
+           max_leaf_nodes=None, min_impurity_decrease=0.0,
+           min_impurity_split=None, min_samples_leaf=1,
+           min_samples_split=2, min_weight_fraction_leaf=0.0,
+           presort=False, random_state=None, splitter='best')
+```
 
 ## 4.4 Random Forest Regression
+For Random Forest Regressor, *ModelComplexity_RF(X, y)* plots this complexity curve:
+
+![Random Forest Regressor complexity curve](https://raw.githubusercontent.com/francescopisu/Used-car-price-prediction/master/images/RF_complexity_curve.png)
+
+This time we can see that the best value for **max_depth** is around 18 and to be sure we use *RF_SparkizedGridSearchCV(X,y)* to determine the best value.
+
+```
+RandomForestRegressor(bootstrap=True, criterion='mse', max_depth=18,
+           max_features='auto', max_leaf_nodes=None,
+           min_impurity_decrease=0.0, min_impurity_split=None,
+           min_samples_leaf=1, min_samples_split=2,
+           min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+           oob_score=False, random_state=None, verbose=0, warm_start=False)
+```
+
+# 5 Experimental Results
+
 
 Regression Model        | Training Set | Test Set    | Best Score CV=3 | R2 Score | RMSE Training | RMSE Test
 ----------------------- | ------------ | ----------- | --------------- | -------- | ------------- | ---------
 Linear Regressor        | 0.948        | 0.947       | 0.944           | 0.943    | 2361.211      | 2450.764
-Decision Tree Regressor | 0.948        | 0.947       | 0.944           | 0.943    | 2361.211      | 2450.764
-Random Forest Regressor | 0.948        | 0.947       | 0.944           | 0.943    | 2361.211      | 2450.764 
+Decision Tree Regressor | 0.949        | 0.930       | 0.931           | 0.911    | 2438.814      | 3080.129
+Random Forest Regressor | 0.961        | 0.945       | 0.948           | 0.928    | 2204.481      | 2768.085 
 
 
  
 
-<!-- THIRD CHAPTER -->
+<!-- FOURTH CHAPTER -->
 
 
 
