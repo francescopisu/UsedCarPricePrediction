@@ -3,7 +3,6 @@
 
 - [Regression Analysis for Used Car Price Prediction](#regression-analysis-for-used-car-price-prediction)
   * [1.1 Introduction](#11-introduction)
-  
   * [1.2 Tools](#12-tools)
   * [1.3 Used car price prediction problem](#13-used-car-price-prediction-problem)
 - [2. Notebook structure](#2-notebook-structure)
@@ -53,7 +52,9 @@ Since some attributes of the dataset aren't relevant to our analysis, they have 
 <!-- SECOND CHAPTER -->
 # 2 Notebook structure
 The python notebook is structured as follows:
-
+<details><summary>Notebook structure</summary>
+<p>
+ 
 ```
 Used_car_price_prediction:
 │   installing libraries 
@@ -95,8 +96,10 @@ Used_car_price_prediction:
 |
 └─── Predictions on final model and conclusions
 |     feature importance
-
 ```
+
+</p>
+</details>
 <!-- SECOND CHAPTER -->
 
 <!-- THIRD CHAPTER -->
@@ -105,8 +108,49 @@ This chapter provides an in-depth description of the followed methodology for so
 The [dataset](https://www.kaggle.com/jpayne/852k-used-car-listings) on which the regression analysis was performed consists of approximately 1.2 milion records of used car sales in the american market from 1997 to 2018, acquired via scraping on [TrueCar.com](http://truecar.com) car sales portal.  
 Each record has the following features: Id, price, year, mileage, city, state, license plate, manufacturer and model.
 
-
+![Dataset sample](https://raw.githubusercontent.com/francescopisu/Used-car-price-prediction/master/images/data_sample.png)
  
+## 3.1 ELK Stack Analysis
+ELK Stack is a set of Open Source products designed by Elastic for analizing and visualizing data of any format through intuitive charts. The stack is composed by three tools: **Elasticsearch**, **Logstash** e **Kibana**.  
+
+A more detailed discussion about this analysis is available at the following [link](...).
+
+### Logstash
+The main purpose of Logstash is to manipulate and adapt data of various format coming from different sources, so that the output data is compatible with the chosen destination.  
+One of the first operations we needed to do was to adapt our dataset in order to make it compatible with Elasticsearch. To make this possible, we created a [*logstash.conf*](link_to_logstash.conf] configuration file which told Logstash about general structure of the datset, typology of data and filters that had to be applied to each row. Lastly, Elasticsearch as destination has been specified.
+
+### Elasticsearch
+This is the engine that allowed us to extract the relevant information from the dataset and to understand how the various features were related to each other.  
+Below is an example of a query which groups similar models and for each of them extracts the average, mininum and maximum price.
+
+<details><summary>Query example</summary>
+ <p>
+  
+ ```
+     aggs: {
+           Model: {
+             aggs: {
+               info: {
+                 stats: {field: "Price"}
+               }
+             }
+             terms: {field: "Model.keyword", size: 10000}
+           }
+         }
+       }
+ ```
+
+ </p>
+</details> 
+
+### Kibana
+Kibana has been used to create a dashboard in order to visualize the data output of Elasticsearch queries.
+
+![Gaussian distribution of Price by Car Manufacturers](https://raw.githubusercontent.com/francescopisu/Used-car-price-prediction/master/images/gaussian.JPG)
+
+## 3.2 Regression Analysis
+Formally, a regression analysis consists of a series of statistical processes aimed at estimating the relationships existing between a set of variables; in particular we try to estimate the relationship between a special variable called dependent (in our case the price) and the remaining independent variables (the other features). This analysis makes it possible to understand how the value of the dependent variable changes as the value of any of the independent variables changes, keeping the others fixed.  
+To carry out the prediction, various techniques have been studied including linear regression, decision trees and decision tree forests.
 
 <!-- THIRD CHAPTER -->
 
