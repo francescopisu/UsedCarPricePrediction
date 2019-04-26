@@ -13,11 +13,11 @@
     - [Kibana](#kibana)
   * [3.2 Regression Analysis](#32-regression-analysis)
     - [Data Analysis](#data-analysis)
-    - [Data preprocessing](#data-preprocessing)
-    - [Removing Outliers](#removing-outliers)
-    - [Managing categorical features](#managing-categorical-features)
+    - [3.2.1 Data preprocessing](#321-data-preprocessing)
+      - [Removing Outliers](#removing-outliers)
+      - [Managing categorical attributes](#managing-categorical-attributes)
 - [4. Comparing regression models](#4-comparing-regression-models)
-  * [4.1 Parallelizing Hyperparameter Tuning with Apache Spark](#41-parallelizing-hyperparameter-tuning-with-apache-spark)
+  * [4.1 Parallelizing Hyperparameter Tuning with SparkSklearn](#41-parallelizing-hyperparameter-tuning-with-spark-sklearn)
   * [4.2 Linear Regression](#42-linear-regression)
   * [4.3 Decision Tree Regression](#43-decision-tree-regression)
   * [4.4 Random Forest Regression](#44-random-forest-regression)
@@ -151,6 +151,26 @@ Kibana has been used to create a dashboard in order to visualize the data output
 ## 3.2 Regression Analysis
 Formally, a regression analysis consists of a series of statistical processes aimed at estimating the relationships existing between a set of variables; in particular we try to estimate the relationship between a special variable called dependent (in our case the price) and the remaining independent variables (the other features). This analysis makes it possible to understand how the value of the dependent variable changes as the value of any of the independent variables changes, keeping the others fixed.  
 To carry out the prediction, various techniques have been studied including linear regression, decision trees and decision tree forests.
+
+### Data Analysis
+Before preprocessing the data we must take a look to how the dataset shows up. In particular we carry out an analysis on the price attribute: describing it allows us to appreciate some informations such as min and max values and standard deviation.  We then proceed to compute skewness and kurtosis of the distribution. Next, we observe its relationship with numerical and categorical features by plotting some graphs.  
+Feature importance computation showed us that Year and Mileage are both important for Price attribute and through correlation matrices we can learn a bit more about that.
+
+### 3.2.1 Data Preprocessing
+The dataset used to carry out the analysis is one of the best available in terms of cleanliness. Despite this, it was necessary to perform preprocessing in order to minimize the probability of incorrect learning by the models.  
+First it was ascertained that none of the attributes of the dataset presented null values; surprisingly, no feature presented null values, so no action was required to do so. Subsequently, the plausibility of the values for each of the numerical attributes (Price, Imm. Year, Mileage) present in the dataset was verified. We observed some cars with an extremely high mileage and we applied a filter on mileage, taking all cars with a mileage between 5000 and 250000. Moreover, we decided to take only the cars registered between 2008 and 2017 (extremes included) because the majority of the dataset is refers to that particular year range.  
+Lastly, the distribution of Prices has been normalized by applying a log transformation.
+
+#### Removing Outliers
+As the Car Manufacturer/Price box plot shows, there is a high presence of outliers in the dataset and the only way to tackle this problem is to apply an outliers removal procedure based on the single car model.  To do so, we take only the values between the 25th and 80th percentile of the gaussian distribution; this procedure is then applied to each of 3k models.
+
+#### Managing categorical attributes
+For managing categorical attributes two different approaches has been taken, depending on the particular regression model.  
+For linear regression we had to apply a *One Hot Encoding*(OHE) procedure, through which a noolean attribute is added to the dataset for each unique value of the categorical attributes. Clearly, this procedure must be done with caution because the dimensionality of the set ramps up very quickly. 
+In our case the only two categorical attributes were Make (car manufacturer) and Model; Model is a categorical variable with more than 3k values and, as mentioned, OHencoding it will generate a dataset with more or less 3000 attributes. That is the technique of choice for linear regressors.  
+For decision tree and random forests we simply applied a label encoding procedure, through which an increasing number is associated to each value of a categorical attribute. Label Encoding doesn't fit linear regression well because this type of model will try to find a correlation between those values: for example, if Ford is mapped to 501 and BMW is mapped to 650, linear regressors will automatically assume that BMW in a certain way "is better" than Ford.  
+An advantage of Label Encoding is obviously the fact that the dimensionality remains untouched.
+
 
 <!-- THIRD CHAPTER -->
 
