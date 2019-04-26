@@ -17,7 +17,7 @@
       - [Removing Outliers](#removing-outliers)
       - [Managing categorical attributes](#managing-categorical-attributes)
 - [4. Comparing regression models](#4-comparing-regression-models)
-  * [4.1 Parallelizing Hyperparameter Tuning with SparkSklearn](#41-parallelizing-hyperparameter-tuning-with-spark-sklearn)
+  * [4.1 Parallelizing Hyperparameter Tuning with SparkSklearn](#41-parallelizing-hyperparameter-tuning-with-sparksklearn)
   * [4.2 Linear Regression](#42-linear-regression)
   * [4.3 Decision Tree Regression](#43-decision-tree-regression)
   * [4.4 Random Forest Regression](#44-random-forest-regression)
@@ -161,16 +161,53 @@ The dataset used to carry out the analysis is one of the best available in terms
 First it was ascertained that none of the attributes of the dataset presented null values; surprisingly, no feature presented null values, so no action was required to do so. Subsequently, the plausibility of the values for each of the numerical attributes (Price, Imm. Year, Mileage) present in the dataset was verified. We observed some cars with an extremely high mileage and we applied a filter on mileage, taking all cars with a mileage between 5000 and 250000. Moreover, we decided to take only the cars registered between 2008 and 2017 (extremes included) because the majority of the dataset is refers to that particular year range.  
 Lastly, the distribution of Prices has been normalized by applying a log transformation.
 
+Price Distribution         |  Probability Plot
+:-------------------------:|:-------------------------:
+![](https://raw.githubusercontent.com/francescopisu/Used-car-price-prediction/master/images/guassian_distribution_prices.png)  |  ![](https://raw.githubusercontent.com/francescopisu/Used-car-price-prediction/master/images/probability_plot.png)
+
 #### Removing Outliers
-As the Car Manufacturer/Price box plot shows, there is a high presence of outliers in the dataset and the only way to tackle this problem is to apply an outliers removal procedure based on the single car model.  To do so, we take only the values between the 25th and 80th percentile of the gaussian distribution; this procedure is then applied to each of 3k models.
+As the Car Manufacturer/Price box plot shows, there is a high presence of outliers in the dataset and the only way to tackle this problem is to apply an outliers removal procedure based on the single car model.  To do so, we take only the values between the 20th and 80th percentile of the gaussian distribution; this procedure is then applied to each of 3k models.
 
 #### Managing categorical attributes
 For managing categorical attributes two different approaches has been taken, depending on the particular regression model.  
 For linear regression we had to apply a *One Hot Encoding*(OHE) procedure, through which a noolean attribute is added to the dataset for each unique value of the categorical attributes. Clearly, this procedure must be done with caution because the dimensionality of the set ramps up very quickly. 
 In our case the only two categorical attributes were Make (car manufacturer) and Model; Model is a categorical variable with more than 3k values and, as mentioned, OHencoding it will generate a dataset with more or less 3000 attributes. That is the technique of choice for linear regressors.  
 For decision tree and random forests we simply applied a label encoding procedure, through which an increasing number is associated to each value of a categorical attribute. Label Encoding doesn't fit linear regression well because this type of model will try to find a correlation between those values: for example, if Ford is mapped to 501 and BMW is mapped to 650, linear regressors will automatically assume that BMW in a certain way "is better" than Ford.  
-An advantage of Label Encoding is obviously the fact that the dimensionality remains untouched.
+An advantage of Label Encoding is obviously the fact that the dimensionality remains untouched.  
 
+Last but not least, the dataset has been split into training set (66% of total) and hold-out test set (33% of total) for final validation.
+
+# 4 Comparing regression models
+In this section we compare the different regression models used in the analysis.
+
+## 4.1 Parallelizing Hyperparameter Tuning with SparkSklearn
+Each of the three prediction models used is characterized by a certain number of parameters (fit_intercept, normalize and copy_X for the linear regressor, max_depth for random forest and decision trees). Based on the value assumed by these parameters, the model may have better / worse performance. The process by which the optimal value is determined for each parameter relative to the training set is called **Hyperparameter Tuning**.  
+This is a resource and time-consuming process. The entire project was implemented by exploiting the functionalities offered by the Sci-Kit Learn library (Sklearn) of Python so the parameter tuning process is performed by a function called GridSearchCV: this method performs the fit with every possible combination of parameter values specified in a grid of parameters, executing at the same time the Cross-Validation process that allows to make the most of the available data and reduce the probability of overfitting the model.  
+To speed up this process, the tuning phase has been carried out exploiting the *Spark-Sklearn* implementation of GridSearchCV, which uses Apache Spark to parallelize the calculation.
+
+## 4.2 Linear Regression
+GridSearchCV for Linear Regression applied to the training set outputs these as the best parameters:
+```
+LinearRegression(copy_X=True, fit_intercept=False, n_jobs=1, normalize=True)
+```
+We then fit a linear regressor with these parameters. In the table below we can observe several information such as scores obtained on training/test sets, Best Score with CV, R2 score and RMSEs.  
+
+
+## 4.3 Decision Tree Regression
+Using *RF_SparkizedGridSearchCV(X, y)* we determine the best value for **max_depth** parameter. This function fits a Decision Tree Regressor for increasing values of max_depth parameter (1, 5, 10, 15, 16, 17).
+
+
+
+## 4.4 Random Forest Regression
+
+Regression Model        | Training Set | Test Set    | Best Score CV=3 | R2 Score | RMSE Training | RMSE Test
+----------------------- | ------------ | ----------- | --------------- | -------- | ------------- | ---------
+Linear Regressor        | 0.948        | 0.947       | 0.944           | 0.943    | 2361.211      | 2450.764
+Decision Tree Regressor | 0.948        | 0.947       | 0.944           | 0.943    | 2361.211      | 2450.764
+Random Forest Regressor | 0.948        | 0.947       | 0.944           | 0.943    | 2361.211      | 2450.764 
+
+
+ 
 
 <!-- THIRD CHAPTER -->
 
