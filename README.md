@@ -22,8 +22,7 @@
   * [4.3 Decision Tree Regression](#43-decision-tree-regression)
   * [4.4 Random Forest Regression](#44-random-forest-regression)
 - [5. Experimental Results](#5-experimental-results)
-- [6. Conclusions](#6-conclusion)
-- [References](#references)
+- [6. Conclusions](#6-conclusions)
 
 <!-- FIRST CHAPTER -->
 ## 1.1 Introduction
@@ -201,7 +200,7 @@ Using *ModelComplexity_DT(X, y)* we determine the best value for **max_depth** p
 
 ![Decision Tree Regressor complexity curve](https://raw.githubusercontent.com/francescopisu/Used-car-price-prediction/master/images/DT_complexity_curve.png)
 
-The chart above is called complexity curve and it shows the performance of the model (training and test score) for increasing values of max_depth. The best value is around 17 because the two scores are close.  
+The chart above is called complexity curve and it shows the performance of the model (training and test score) for increasing values of max_depth. The best value is around 17 because the two scores are close; pushing ahead means overfitting the model.  
 
 Then, using the method *DT_SparkizedGridSearchCV(X, y)* we determine precisely which value for max_depth is best.
 ```
@@ -227,20 +226,78 @@ RandomForestRegressor(bootstrap=True, criterion='mse', max_depth=18,
            min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
            oob_score=False, random_state=None, verbose=0, warm_start=False)
 ```
+<!-- FOURTH CHAPTER -->
+
+<!-- FIFTH CHAPTER -->
 
 # 5 Experimental Results
+The table below shows experimental results obtained for each model.
+
+Regression Model | Training Set Score | Test Set Score| Best Score CV=3 | R2 Score | RMSE Training | RMSE Test
+---------------- | ------------------ | ------------- | --------------- | -------- | ------------- | ---------
+Linear           | 0.948              | 0.947         | 0.944           | 0.943    | 2361.211      | 2450.764
+Decision Tree    | 0.949              | 0.930         | 0.931           | 0.911    | 2438.814      | 3080.129
+Random Forest    | 0.961              | 0.945         | 0.948           | 0.928    | 2204.481      | 2768.085 
 
 
-Regression Model        | Training Set | Test Set    | Best Score CV=3 | R2 Score | RMSE Training | RMSE Test
------------------------ | ------------ | ----------- | --------------- | -------- | ------------- | ---------
-Linear Regressor        | 0.948        | 0.947       | 0.944           | 0.943    | 2361.211      | 2450.764
-Decision Tree Regressor | 0.949        | 0.930       | 0.931           | 0.911    | 2438.814      | 3080.129
-Random Forest Regressor | 0.961        | 0.945       | 0.948           | 0.928    | 2204.481      | 2768.085 
+It seems that Linear Regressor achieved the best results since training and test score are very similar to each other and so are RMSEs for training and test. When training's RMSE is much higher than the test one, the model is said to be overfitted.  We can see this situation in both decision tree and random forest.  Furthermore, linear and random forest regressor's performances are comparable in terms of score, with a small advantage in the best score with CV by Random Forest.  
+Declaring linear regressor as the winner would be too hasty from us, also because we must not forget that linear regressor in trained with a dataset composed by more or less 3k attributes because of OHE.  
+Let's observe cross validation results on training set, performed using KFold Cross Validation with K=10.
 
 
- 
+Regression Model |S1     |S2     |S3     |S4     | S5    | S6    | S7    | S8    | S9    | S10   | Mean  | Std  |
+---------------- |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|------| 
+Linear           |2511.16|2507.64|2503.01|2570.70|2837.55|2508.55|2665.38|2564.91|2658.98|2585.36|2591.32|100.00|
+Decision Tree    |2697.16|2895.43|2876.56|3429.01|3259.62|2809.82|3032.75|2950.64|3517.11|2907.55|3037.57|259.00|
+Random Forest    |2614.98|2581.44|2603.29|2734.10|2908.28|2552.35|2615.32|2829.70|2608.75|2606.28|2665.45|112.31|
 
-<!-- FOURTH CHAPTER -->
+Note that these results have been obtained in a certain cross validation session and each of them will produce slightly different results due to the way the dataset is divided in KFold CV method. 
+
+
+<!--
+Scores: [2713.63541279 2585.97678312 2668.83898308 2601.21587289 2675.20287698
+ 2739.70005639 2659.99607027 2791.59226561 2859.81954615 2647.45000803]
+Mean: 2694.3427875297093
+Standard deviation: 80.05043970676455
+-->
+
+<!-- FIFTH CHAPTER -->
+
+<!-- SIXTH CHAPTER -->
+
+# 6 Conclusions 
+As we can see in the cross validation scores table, linear regressor and random forest are the ones that perform better, with a training RMSE of around 2600 and a standard deviation decisively lower than decision tree's one.  
+Saying that one model is objectively better than another is difficult, especially in this situation where linear regressor is working on a OHencoded dataset and random forest regressor on a label encoded one. Random forests are almost always preferable to linear regressors because they don't need much preprocessing and sometimes they produce good results even in presence of outliers.  In our case the differences in performance between linear regressor and random forest are not enough to justify the exaggeratedly high number of attributes introduces by one hot encoding.  
+Furthermore, random forest regressor fits the data in a fraction of the time required by linear regressor as we can see in the data below:
+
+```
+Linear regressor fit:
+CPU times: user 31.7 s, sys: 20.2 s, total: 51.9 s
+Wall time: 26.3 s
+
+Random forest regressor fit:
+CPU times: user 9.31 s, sys: 9.99 ms, total: 9.32 s
+Wall time: 9.33 s
+```
+
+Therefore, Random Forest Regressor has been chosen as the final mode. Following the feature importance computed with K=5 KFold Cross Validaion, scores on the hold-out test set and the final RMSE computed on the entire dataset.
+
+#### Feature Importance
+![Feature importance](https://raw.githubusercontent.com/francescopisu/Used-car-price-prediction/master/images/feature_importance_CV.png)
+
+#### Scores
+Regression Model | Test Set Score     | R2 Score      | RMSE Test       |
+---------------- | ------------------ | ------------- | --------------- | 
+Random Forest    | 0.948              | 0.930         | 2747.75         | 
+
+#### Entire dataset RMSE
+Regression Model |S1     |S2     |S3     |S4     | S5    | S6    | S7    | S8    | S9    | S10   | Mean  | Std  |
+---------------- |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|------| 
+Random Forest    |2727.38|2520.80|2380.93|2344.55|2417.68|2563.77|2448.26|2609.54|2560.65|2568.92|2514.25|110.62|
+
+
+<!-- SIXTH CHAPTER -->
+
 
 
 
