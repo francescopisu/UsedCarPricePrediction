@@ -114,7 +114,7 @@ Each record has the following features: Id, price, year, mileage, city, state, l
 ## 3.1 ELK Stack Analysis
 ELK Stack is a set of Open Source products designed by Elastic for analizing and visualizing data of any format through intuitive charts. The stack is composed by three tools: **Elasticsearch**, **Logstash** e **Kibana**.  
 
-A more detailed discussion about this analysis is available at the following [link](...).
+A more detailed discussion about this analysis is available at the following [link](https://drive.google.com/file/d/1gizVS0h6qZLChzQVc9Qo70eDjSji78Uf/view?usp=sharing).
 
 ### Logstash
 The main purpose of Logstash is to manipulate and adapt data of various format coming from different sources, so that the output data is compatible with the chosen destination.  
