@@ -1,5 +1,5 @@
 # Regression Analysis for Used Car Price Prediction
-[Francesco Pisu](http://github.com/francescopisu), Hicham Lafhouli
+[Francesco Pisu](http://github.com/francescopisu), [Hicham Lafhouli](https://github.com/H1cham)
 
 - [Regression Analysis for Used Car Price Prediction](#regression-analysis-for-used-car-price-prediction)
   * [1.1 Introduction](#11-introduction)
