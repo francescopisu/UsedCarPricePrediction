@@ -28,8 +28,6 @@
 ## 1.1 Introduction
 This project aims to solve the problem of predicting the price of a used car, using Sklearn's supervised machine learning techniques integrated with Spark-Sklearn library. It is clearly a regression problem and predictions are carried out on dataset of used car sales in the american car market. Several regression tecniques have been studied, including Linear Regression, Decision Trees and Random forests of decision trees. Their performances were compared in order to determine which one works best with out dataset.
 
-This project has been developed for the [Big Data](http://people.unica.it/diegoreforgiato/didattica/insegnamenti/?mu=Guide/PaginaADErogata.do;jsessionid=3BAC62552963C7EB2AD77FCA1D703ACF.jvm1?ad_er_id=2018*N0*N0*S1*29056*20383&ANNO_ACCADEMICO=2018&mostra_percorsi=S&step=1&jsid=3BAC62552963C7EB2AD77FCA1D703ACF.jvm1&nsc=ffffffff0909189545525d5f4f58455e445a4a42378b) course at [University of Cagliari](http://corsi.unica.it/informatica/), supervised by professor [Diego Reforgiato](http://people.unica.it/diegoreforgiato/).
-
 This project is available as a Google Colaboratory Notebook at the following [link](https://colab.research.google.com/drive/1q48qWY3To0IeF_biazbaGhtzHgXo2yPH).
 
 ## 1.2 Tools
